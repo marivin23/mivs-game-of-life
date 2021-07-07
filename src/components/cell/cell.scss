@@ -1,0 +1,23 @@
+$colors: (red, green, blue, yellow, cyan, pink, black);
+$key: random( length($colors) );
+$nth: nth( $colors, $key );
+
+:root {
+  --cell-width: 10px;
+}
+
+.cell {
+  min-width: var(--cell-width);
+  min-height: var(--cell-width);
+
+  transition: background-color ease-out 0.2s;
+
+  &.alive {
+    background-color: $nth;
+  }
+
+  &.dead {
+    background-color: white;
+  }
+
+}

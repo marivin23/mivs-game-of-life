@@ -1,0 +1,39 @@
+.cell-grid {
+  min-width: 100vw;
+  min-height: calc(100vh - #{200px});
+
+  .cell-col {
+    display: flex;
+
+    .cell-row {
+      display: flex;
+      flex-direction: row;
+    }
+  }
+
+  .restart {
+    position: absolute;
+    left: 50%;
+    top: 90%;
+    transform: translateX(-50%);
+
+    width: 100px;
+    height: 60px;
+    border-radius: 10px;
+    background: grey;
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 60px;
+    font-weight: 500;
+
+    * {
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+
+    &:hover {
+      background: black;
+    }
+  }
+}

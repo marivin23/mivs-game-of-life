@@ -1,23 +1,32 @@
-$colors: (red, green, blue, yellow, cyan, pink, black);
-$key: random( length($colors) );
-$nth: nth( $colors, $key );
-
 :root {
   --cell-width: 10px;
+  --cell-color: 0;
 }
 
 .cell {
   min-width: var(--cell-width);
   min-height: var(--cell-width);
 
-  transition: background-color ease-out 0.2s;
-
-  &.alive {
-    background-color: $nth;
-  }
+  transition: background-color ease-in-out 0.3s;
 
   &.dead {
     background-color: white;
+  }
+
+  &.color-1 {
+    background-color: #f0efef
+  }
+
+  &.color-2 {
+    background-color: #ddeedd
+  }
+
+  &.color-3 {
+    background-color: #c2d4dd
+  }
+
+  &.color-4 {
+    background-color: #b0aac0
   }
 
 }

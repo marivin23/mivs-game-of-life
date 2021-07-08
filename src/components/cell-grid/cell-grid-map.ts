@@ -10,6 +10,11 @@ export class CellGridMap {
         return new Array(gridDimensions.height).fill(null).map( e => new Array(gridDimensions.width).fill(null).map(e => Math.round(Math.random())));
     }
 
+    static constructCellMapV2(width: number, height: number): Array<Array<number>> {
+        const gridDimensions = { width, height };
+        return new Array(gridDimensions.height).fill(null).map( e => new Array(gridDimensions.width).fill(null).map(e => Math.round(Math.random())));
+    }
+
     static constructEmptyMap(resolution: number) {
         const gridDimensions = {
             width: Math.floor(window.innerWidth / resolution),

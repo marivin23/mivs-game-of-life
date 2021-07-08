@@ -16,7 +16,7 @@ class App extends React.Component {
     render() {
         return (
             <AppStateContext.Provider value={this.appContextHandler.getContextState()}>
-                <CellGridContainer resolution={48}/>
+                <CellGridContainer resolution={8}/>
             </AppStateContext.Provider>
         );
     }

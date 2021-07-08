@@ -2,6 +2,7 @@ import * as React from 'react';
 import {CellGrid} from "./cell-grid";
 import {CellGridProps} from "./cell-grid-props";
 import {AppStateContext} from "../../context";
+import { CanvasCellGrid } from '../canvas-cell-grid/canvas-cell-grid';
 
 export class CellGridContainer extends React.Component<CellGridProps, any> {
     static contextType = AppStateContext;
@@ -12,7 +13,7 @@ export class CellGridContainer extends React.Component<CellGridProps, any> {
 
     render(): React.ReactNode {
         return (
-            <CellGrid {...this.props}/>
+            <CanvasCellGrid {...this.props}/>
         )
     }
 }

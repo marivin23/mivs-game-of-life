@@ -15,16 +15,18 @@ $colors: (red, green, blue, yellow, cyan, pink, black);
 
   .restart {
     position: fixed;
-    left: 60px;
-    top: 20px;
+    z-index: 1000;
+    top: 90%;
+    left: 50%;
     transform: translateX(-50%);
+    cursor: pointer;
 
     width: 80px;
     height: 40px;
     border-radius: 5px;
 
     box-shadow: 0 3px 6px #CCCCCC98;
-    background: darkgray;
+    background: #c2d4dd;
     color: white;
 
     text-align: center;
@@ -41,7 +43,16 @@ $colors: (red, green, blue, yellow, cyan, pink, black);
     }
 
     &:hover {
-      background: gray;
+      background: #b0aac0;
+    }
+  }
+}
+
+@media screen and (max-width: 768px){
+  .cell-grid {
+    .restart {
+      top: 90%;
+      left: 20%;
     }
   }
 }

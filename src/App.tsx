@@ -16,7 +16,15 @@ class App extends React.Component {
     render() {
         return (
             <AppStateContext.Provider value={this.appContextHandler.getContextState()}>
+                <div className='wip-site'>
+                    Currently the site's status is: WIP
+                </div>
+
                 <CellGridContainer resolution={48}/>
+
+                <div className='contact-me-container'>
+                    <a href='mailto: irimiemariusvictor@gmail.com' target='#'>Contact me!</a>
+                </div>
             </AppStateContext.Provider>
         );
     }

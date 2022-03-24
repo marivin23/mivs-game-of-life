@@ -20,7 +20,7 @@ class App extends React.Component {
                     Currently the site's status is: WIP
                 </div>
 
-                <CellGridContainer resolution={48}/>
+                <CellGridContainer cols={4} rows={4}/>
 
                 <div className='contact-me-container'>
                     <a href='mailto: irimiemariusvictor@gmail.com' target='#'>Contact me!</a>

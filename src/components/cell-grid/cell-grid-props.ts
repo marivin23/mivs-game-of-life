@@ -1,3 +1,4 @@
 export interface CellGridProps {
-    resolution: number;
+    rows: number;
+    cols: number;
 }

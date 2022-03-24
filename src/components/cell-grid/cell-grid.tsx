@@ -6,10 +6,10 @@ import './cell-grid.scss';
 import getGameOfLife from '../../hooks/getGameOfLife'
 
 export class CellGrid extends React.Component<CellGridProps, CellGridState> {
-    randomGame: () => Promise<Array<CellState>>
-    getNextGeneration: (map: Array<CellState>) => Promise<Array<CellState>>
-    emptyGame: () => Promise<Array<CellState>>
-    mapToCellGrid: (map: Array<CellState>, func: (item: CellState, index: number, i: number, j: number ) => CellState) => Promise<Array<CellState>>
+    randomGame: () => Array<CellState>
+    getNextGeneration: (map: Array<CellState>) => Array<CellState>
+    emptyGame: () => Array<CellState>
+    mapToCellGrid: (map: Array<CellState>, func: (item: CellState, index: number, i: number, j: number ) => CellState) => Array<CellState>;
     constructor(props: CellGridProps) {
         super(props);
         this.state = {
@@ -21,42 +21,36 @@ export class CellGrid extends React.Component<CellGridProps, CellGridState> {
         [this.randomGame, this.getNextGeneration, this.emptyGame, this.mapToCellGrid] = getGameOfLife(4,4)
     }
     async componentDidMount(): Promise<any> {
-        const randomGameOfLife = await this.randomGame()
-        console.log('in component did mount ')
-        console.log('random game is ')
-        console.log(randomGameOfLife)
+        console.log("DID MOUNT")
+        const randomGameOfLife = this.randomGame()
         this.setState({cellMap: randomGameOfLife});
 
-        setInterval(async () => {
-            if (!this.state.cycleValue) {
-                const randomGameOfLife = await this.randomGame()
-                this.setState({cellMap: randomGameOfLife});
-                console.log('Just set state to Random game which is ')
-                console.log(randomGameOfLife)
-            }
-
-            if (!this.state.interruptCycle || !this.state.alreadyComputing) {
-                this.computeNextGeneration();
-            }
-        }, 10000);
+        setInterval(() => this.handleCurrentCycle(), 5000);
     }
 
-    async computeNextGeneration() {
-        console.log('COMPUTE NEXT GENERATION STATE IS : ')
-        console.log(this.state)
+    handleCurrentCycle() {
+        if (!this.state.cycleValue) {
+    const randomGameOfLife = this.randomGame()
+    this.setState({cellMap: randomGameOfLife});
+    console.log(randomGameOfLife);
+}
+
+if (!this.state.interruptCycle || !this.state.alreadyComputing) {
+    this.computeNextGeneration(this.state);
+}
+    }
+
+    async computeNextGeneration(currentState: any) {
+        console.log("BULLSHIT");
+        const currentCellMap = [...currentState.cellMap];
         this.setState({alreadyComputing: true}, async () => {
-            const currentCellMap = [...this.state.cellMap];
-            console.log('old Cell map is ')
-            console.log(currentCellMap)
+            console.log(currentCellMap, 'stateee')
             let nextGenerationCellMap = await this.getNextGeneration(currentCellMap)
             let cycleValue = 0;
             nextGenerationCellMap.forEach(cell => {
+                console.log(cell);
                 if(cell.isAlive) cycleValue += 1
             })
-            console.log('Next Generation Computed as')
-            console.log(nextGenerationCellMap)
-            console.log('Cycle value is ')
-            console.log(cycleValue)
             this.setState({
                 cellMap: nextGenerationCellMap,
                 cycleValue: cycleValue,

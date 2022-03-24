@@ -1,21 +1,20 @@
 
 const randomBool = () => {
-    return Math.random() < 0.6 
+    return Math.random() < 0.6
 }
 // No state is maintained here we just take the input and return something
 const getGameOfLife = (rows, cols) => {
 
-    const applyToCellMap = async (map, func) => {
+    const applyToCellMap = (map, func) => {
         for(let i = 0; i < rows; i++){
             for(let j = 0; j < cols; j++){
-                const item = map[i * cols + j]
-                map[i * cols + j] = await func(map[i * cols + j], i * cols +j, i, j)
+                map[i * cols + j] = func(map[i * cols + j], i * cols +j, i, j)
             }
         }
-        return map
+        return [...map]
     }
 
-     const emptyCellMap = async () => await applyToCellMap(new Array(rows * cols).fill(null), async (item, arrayIndex, i, j) => {
+     const emptyCellMap = () => applyToCellMap(new Array(rows * cols).fill(null), (item, arrayIndex, i, j) => {
             return {
                 x: j,
                 y: i,
@@ -26,10 +25,9 @@ const getGameOfLife = (rows, cols) => {
         })
 
 
-    const randomNewGen = async () => {
-        console.log('RANDOM NEW GEN!!!')
-        const emptyMap = await emptyCellMap()
-        const randomCellMap = await applyToCellMap(emptyMap, async (item, arrayIndex, i, j) => {
+    const randomNewGen = () => {
+        const emptyMap = emptyCellMap()
+        const randomCellMap = applyToCellMap(emptyMap, (item, arrayIndex, i, j) => {
             return {
                 x: j,
                 y: i,
@@ -38,40 +36,38 @@ const getGameOfLife = (rows, cols) => {
                 neighbourSum: 0
             }
         })
-        console.log(randomCellMap)
         return randomCellMap
     }
 
-    const sumOfNeighboursArray = async (map) => {
-        console.log('SUMS !!!!')
+    const sumOfNeighboursArray = (map) => {
         // This function returns an array with the neighbour count of the element on each element's index in
-        const arrayOfSums = await applyToCellMap(map, async (item, arrayIndex, i, j) => {
+        const arrayOfSums = applyToCellMap(map, (item, arrayIndex, i, j) => {
             let sum = 0
             const leftException = (arrayIndex + 1) % cols === 1
             const rightException = (arrayIndex + 1) % cols === 0
             const upException = (arrayIndex - cols) < 0
             const downException = (arrayIndex + cols) > rows * cols - 1
 
-            // NOTE: '+' boolean returns the number version '+' operator before a variable acts as a quick number converter 
-            // NOTE: but this is slow af in chrome so a turnary is the fastest option but a close second option is bool | 0
+            // NOTE: '+' boolean returns the number version '+' operator before a variable acts as a quick number converter
+            // NOTE: but this is slow af in chrome so a turnary is the fastest option but a close second option is bool |
 
             //adding left neighbour with except condition
-            sum += leftException ? 0 : map[arrayIndex - 1].isAlive | 0
+            sum += leftException ? 0 : map[arrayIndex - 1].isAlive || 0
             //adding right neighbour with except condition
-            sum += rightException ? 0 : map[arrayIndex + 1].isAlive | 0
+            sum += rightException ? 0 : map[arrayIndex + 1].isAlive || 0
             //adding up neighbour with except condition
-            sum +=  upException ? 0 : map[arrayIndex - cols].isAlive | 0
+            sum +=  upException ? 0 : map[arrayIndex - cols].isAlive || 0
             //adding down neighbour with except condition
-            sum += downException ? 0 : map[arrayIndex + cols].isAlive | 0
+            sum += downException ? 0 : map[arrayIndex + cols].isAlive || 0
 
             //adding left-up neighbour with except condition
-            sum += leftException || upException ? 0 : map[arrayIndex - cols - 1].isAlive | 0
+            sum += leftException || upException ? 0 : map[arrayIndex - cols - 1].isAlive || 0
             //adding right-up neighbour with except condition
-            sum += rightException || upException ? 0 : map[arrayIndex - cols + 1].isAlive | 0
+            sum += rightException || upException ? 0 : map[arrayIndex - cols + 1].isAlive || 0
             //adding left-down neighbour with except condition
-            sum += leftException || downException ? 0 : map[arrayIndex + cols - 1].isAlive | 0
-            //adding left-up exception 
-            sum += rightException || downException ? 0 : map[arrayIndex + cols + 1].isAlive | 0
+            sum += leftException || downException ? 0 : map[arrayIndex + cols - 1].isAlive || 0
+            //adding left-up exception
+            sum += rightException || downException ? 0 : map[arrayIndex + cols + 1].isAlive || 0
             return {
                 x: item.x,
                 y: item.y,
@@ -80,13 +76,12 @@ const getGameOfLife = (rows, cols) => {
                 neighbourSum: sum
             }
         })
-        return arrayOfSums
+        return [...arrayOfSums]
     }
 
-    // sets all diedSinceLastGeneration to false 
-    const cleanDeathFlags = async (map) => { 
-        console.log('CLEAN DEATH FLAGS')
-        const sanitizedArray = await applyToCellMap(map, async (item, arrayIndex, i, j) => {
+    // sets all diedSinceLastGeneration to false
+    const cleanDeathFlags = (map) => {
+        const sanitizedArray = applyToCellMap(map, (item, arrayIndex, i, j) => {
             return {
                 x: j,
                 y: i,
@@ -95,18 +90,19 @@ const getGameOfLife = (rows, cols) => {
                 neighbourSum: 0
             }
         })
-        return sanitizedArray
+        return [...sanitizedArray]
     }
 
-    const getNewGen = async (prevMap) => {
-        console.log('GET NEW GEN ')
+    const getNewGen = (prevMap) => {
         // first we clean the map of death flags as we are generating a new one and they aren't relevant anymore
-        const sanitizedArray = await cleanDeathFlags(prevMap)
+        const sanitizedArray = cleanDeathFlags(prevMap)
         // second we generate a neighbour array filled with the neighbour cound on each element's index
-        const sumsOfNeighbours = await sumOfNeighboursArray(sanitizedArray)
+        const sumsOfNeighbours = [...sumOfNeighboursArray(sanitizedArray)];
+
+        console.log(sumsOfNeighbours, "sum");
 
         // thirdly we create a new generation based on the rules of the game
-        const newGen =  await applyToCellMap(sumsOfNeighbours, async (item, arrayIndex, i, j) => {
+        const newGen = applyToCellMap(sumsOfNeighbours, (item, arrayIndex, i, j) => {
             if (item.neighbourSum >= 2 && item.neighBourSum <=3){
                 return {
                     x: item.x,
@@ -125,7 +121,6 @@ const getGameOfLife = (rows, cols) => {
                 }
             }
         })
-
         // last step is setting the new state and returning the requested new generation
         return newGen
     }

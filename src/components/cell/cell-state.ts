@@ -1,6 +1,7 @@
-export interface CellState {
-    posX: number;
-    posY: number;
+export default interface CellState {
+    x: number;
+    y: number;
     isAlive: boolean;
-    cellColor: string;
+    diedSinceLastGeneration: number;
+    neighbourSum: 0;
 }

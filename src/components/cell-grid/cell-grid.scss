@@ -1,9 +1,17 @@
 $colors: (red, green, blue, yellow, cyan, pink, black);
+.cell-gridv2 {
+    width: 100vw;
+    height: 100vh;
+}
+.fiberCanvas {
+    display: flex;
+    min-width: 100VW;
+    min-height: calc(100vh - #{200px});
 
+}
 .cell-grid {
   min-width: 100vw;
   min-height: calc(100vh - #{200px});
-
   .cell-col {
     display: flex;
 

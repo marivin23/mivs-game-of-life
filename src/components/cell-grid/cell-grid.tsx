@@ -3,9 +3,10 @@ import {CellGridProps} from "./cell-grid-props";
 import CellGridState from "./cell-grid-state";
 import CellState from '../cell/cell-state';
 import './cell-grid.scss';
-
+import { Canvas } from '@react-three/fiber'
+import Cell from '../cell/cell'
 const randomBool = () => {
-    return Math.random() < 0.2
+    return Math.random() < 0.5
 }
 
 export class CellGrid extends React.Component<CellGridProps, CellGridState> {
@@ -69,8 +70,8 @@ export class CellGrid extends React.Component<CellGridProps, CellGridState> {
         // This function returns an array with the neighbour count of the element on each element's index in
             const arrayOfSums = this.applyToMap(map, (item, arrayIndex, i, j) => {
                 let sum = 0
-                const leftException = (arrayIndex + 1) % this.props.cols === 1
-                const rightException = (arrayIndex + 1) % this.props.cols === 0
+                const leftException = arrayIndex % this.props.cols === 0
+                const rightException = arrayIndex % this.props.cols === this.props.cols - 1
                 const upException = (arrayIndex - this.props.cols) < 0
                 const downException = (arrayIndex + this.props.cols) > this.props.rows * this.props.cols - 1
 
@@ -128,24 +129,49 @@ export class CellGrid extends React.Component<CellGridProps, CellGridState> {
 
             // thirdly we create a new generation based on the rules of the game
             const newGen = this.applyToMap(sumsOfNeighbours, (item, arrayIndex, i, j) => {
-                if (item.neighbourSum >= 2 && item.neighbourSum <=3){
-                    return {
-                        x: item.x,
-                        y: item.y,
-                        isAlive: true,
-                        diedSinceLastGeneration: false,
-                        neighbourSum: 0
+                if (item.isAlive){
+                    //Any live cell with 2 or 3 neighbours survives
+                    //All other live cells die in the next generation.
+                    if (item.neighbourSum === 2 || item.neighbourSum === 3){
+                        return {
+                            x: item.x,
+                            y: item.y,
+                            isAlive: true,
+                            diedSinceLastGeneration: false,
+                            neighbourSum: 0
+                        }
                     }
-                }else {
+
                     return {
                         x: item.x,
                         y: item.y,
                         isAlive: false,
-                        diedSinceLastGeneration: prevMap[arrayIndex].isAlive ? true : false,
+                        diedSinceLastGeneration: true,
+                        neighbourSum: 0
+                    }
+                } else {
+                    // Any dead cell with 3 neighbours comes to life
+                    // All other dead cells remain dead
+                    if(item.neighbourSum === 3){
+                        return {
+                            x: item.x,
+                            y: item.y,
+                            isAlive: true,
+                            diedSinceLastGeneration: false,
+                            neighbourSum: 0
+                        }
+                    }
+
+                    return {
+                        x: item.x,
+                        y: item.y,
+                        isAlive: false,
+                        diedSinceLastGeneration: false,
                         neighbourSum: 0
                     }
                 }
             })
+
             // last step is setting the new state and returning the requested new generation
             return newGen
         }
@@ -153,24 +179,19 @@ export class CellGrid extends React.Component<CellGridProps, CellGridState> {
 
     }
     componentDidMount() {
-        console.log("DID MOUNT")
         const randomGameOfLife = this.randomMap()
         this.setState({cellMap: randomGameOfLife});
 
-        setInterval(() => this.handleCurrentCycle(), 5000);
+        setInterval(() => this.handleCurrentCycle(), 500);
     }
 
     handleCurrentCycle() {
-        console.log('handleCurrentCycle!!!!')
         if (!this.state.cycleValue) {
             const randomGameOfLife = this.randomMap()
             this.setState({cellMap: randomGameOfLife});
-            console.log(' no cycleValue we set a random game in handleCurrentCycle first if')
-            console.log(randomGameOfLife);
         }
 
         if (!this.state.interruptCycle || !this.state.alreadyComputing) {
-            console.log('Attempting to compute a new generation in handleCurrentCycle second if')
             this.computeNextGeneration(this.state);
         }
     }
@@ -178,8 +199,6 @@ export class CellGrid extends React.Component<CellGridProps, CellGridState> {
      computeNextGeneration(currentState: any) {
         const currentCellMap = currentState.cellMap;
         this.setState({alreadyComputing: true}, () => {
-            console.log('inside setstate in computeNextGeneration the cellMap state is')
-            console.log(currentCellMap)
             let nextGenerationCellMap = this.getNewGen(currentCellMap)
             let cycleValue = 0;
             nextGenerationCellMap.forEach(cell => {
@@ -194,8 +213,24 @@ export class CellGrid extends React.Component<CellGridProps, CellGridState> {
     }
 
     private renderCellGrid(): React.ReactNode {
-        return <div className='Grid'>
-        </div>
+        const cellSize = 0.1
+        const cells = this.state.cellMap.map((cell, index)=>{
+
+            return <Cell 
+                key={index} 
+                isAlive={cell.isAlive} 
+                size={cellSize} 
+                position={{
+                    y: cell.y * cellSize * 1,
+                    x: cell.x * cellSize* 1 , 
+                    z: 0
+                }} 
+            />
+        })
+        return <Canvas className="fiberCanvas">
+            <ambientLight intensity={1} />
+            {cells}
+        </Canvas>
     }
 
     async restartGrid() {
@@ -206,12 +241,10 @@ export class CellGrid extends React.Component<CellGridProps, CellGridState> {
     }
 
     render(): React.ReactNode {
-        console.log('RERENDER')
         return (
             <div className='cell-grid'>
-                <h1 style={{marginTop: '300px'}}>{this.state.cycleValue}</h1>
                 {!this.state.interruptCycle && this.renderCellGrid()}
-
+                    
                 <div className='restart' onClick={async () => await this.restartGrid()}>
                     RESTART
                 </div>

@@ -2,8 +2,7 @@ import './App.scss';
 import * as React from "react";
 import {AppContextHandler} from "./models/app-context";
 import {AppStateContext} from './context';
-import {CellGridContainer} from "./components/cell-grid/cell-grid-container";
-
+import CellGrid from './components/cell-grid/cell-grid'
 class App extends React.Component {
     appContextHandler: AppContextHandler;
 
@@ -20,7 +19,7 @@ class App extends React.Component {
                     Currently the site's status is: WIP
                 </div>
 
-                <CellGridContainer cols={50} rows={30}/>
+                <CellGrid cols={50} rows={30}/>
 
                 <div className='contact-me-container'>
                     <a href='mailto: irimiemariusvictor@gmail.com' target='#'>Contact me!</a>

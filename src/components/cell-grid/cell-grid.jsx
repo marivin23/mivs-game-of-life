@@ -1,23 +1,18 @@
 import * as React from 'react';
-import {CellGridProps} from "./cell-grid-props";
-import CellGridState from "./cell-grid-state";
-import CellState from '../cell/cell-state';
-import './cell-grid.scss';
+
+import * as THREE from 'three'
 import { Canvas } from '@react-three/fiber'
+import { OrbitControls } from '@react-three/drei'
+
 import Cell from '../cell/cell'
+import './cell-grid.scss';
+
 const randomBool = () => {
     return Math.random() < 0.5
 }
 
-export class CellGrid extends React.Component<CellGridProps, CellGridState> {
-    randomMap: () => Array<CellState>
-    applyToMap: (map: Array<CellState>, func: (item: CellState, index: number, i: number, j: number ) => CellState) => Array<CellState>;
-    emptyMap: () => Array<CellState>
-    getNewGen: (map: Array<CellState>) => Array<CellState>
-    sumOfNeighboursMap: (map: Array<CellState>) => Array<CellState>
-    cleanDeathFlags: (map: Array<CellState>) => Array<CellState>
-
-    constructor(props: CellGridProps) {
+export class CellGrid extends React.Component{
+    constructor(props) {
         super(props);
         this.state = {
             cycleValue: 0,
@@ -196,7 +191,7 @@ export class CellGrid extends React.Component<CellGridProps, CellGridState> {
         }
     }
 
-     computeNextGeneration(currentState: any) {
+    computeNextGeneration(currentState) {
         const currentCellMap = currentState.cellMap;
         this.setState({alreadyComputing: true}, () => {
             let nextGenerationCellMap = this.getNewGen(currentCellMap)
@@ -212,7 +207,7 @@ export class CellGrid extends React.Component<CellGridProps, CellGridState> {
         });
     }
 
-    private renderCellGrid(): React.ReactNode {
+    renderCellGrid() {
         const cellSize = 0.1
         const cells = this.state.cellMap.map((cell, index)=>{
 
@@ -221,16 +216,28 @@ export class CellGrid extends React.Component<CellGridProps, CellGridState> {
                 isAlive={cell.isAlive} 
                 size={cellSize} 
                 position={{
-                    y: cell.y * cellSize * 1,
-                    x: cell.x * cellSize* 1 , 
+                    y: cell.y * cellSize,
+                    x: cell.x * cellSize, 
                     z: 0
                 }} 
             />
         })
-        return <Canvas className="fiberCanvas">
-            <ambientLight intensity={1} />
-            {cells}
-        </Canvas>
+        return <Canvas 
+                    className= "fiberCanvas"
+                    camera={{
+                        position: [cellSize * this.props.rows /2, 0, -10],
+                        near: 0.1,
+                        far: 1000,
+                        zoom: 1,
+                    }}
+                    shadows
+                >
+                    <ambientLight intensity={1} />
+                    <group position={[-cellSize * this.props.rows /2, 0,0]}>
+                        {cells}
+                        <OrbitControls/>
+                    </group>
+                </Canvas>
     }
 
     async restartGrid() {
@@ -240,11 +247,10 @@ export class CellGrid extends React.Component<CellGridProps, CellGridState> {
         });
     }
 
-    render(): React.ReactNode {
+    render() {
         return (
             <div className='cell-grid'>
                 {!this.state.interruptCycle && this.renderCellGrid()}
-                    
                 <div className='restart' onClick={async () => await this.restartGrid()}>
                     RESTART
                 </div>
@@ -252,3 +258,5 @@ export class CellGrid extends React.Component<CellGridProps, CellGridState> {
         )
     }
 }
+
+export default CellGrid

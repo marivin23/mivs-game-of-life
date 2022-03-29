@@ -177,7 +177,7 @@ export class CellGrid extends React.Component{
         const randomGameOfLife = this.randomMap()
         this.setState({cellMap: randomGameOfLife});
 
-        setInterval(() => this.handleCurrentCycle(), 10000);
+        setInterval(() => this.handleCurrentCycle(), 500);
     }
 
     handleCurrentCycle() {
@@ -227,7 +227,7 @@ export class CellGrid extends React.Component{
         return <Canvas 
                     className= "fiberCanvas"
                     camera={{
-                        position: [cellSize * this.props.rows /2, 0, -10],
+                        position: [cellSize * this.props.rows /2, 0, -5],
                         near: 0.1,
                         far: 1000,
                         zoom: 1,
@@ -235,7 +235,7 @@ export class CellGrid extends React.Component{
                     shadows
                 >
                     <ambientLight intensity={1} />
-                    <group position={[-cellSize * this.props.rows /2, 0,0]}>
+                    <group rotation={[Math.PI,0,0]} lookAt={[cellSize * this.props.rows/2, 0, -5]} position={[-cellSize * this.props.rows /2, 0,0]}>
                         {cells}
                         <OrbitControls/>
                     </group>

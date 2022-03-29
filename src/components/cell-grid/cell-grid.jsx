@@ -101,7 +101,7 @@ export class CellGrid extends React.Component{
             })
             return arrayOfSums
         }
-        // sets all diedSinceLastGeneration to false
+        // sets all diedSinceLastGeneration to false AND cleans the neighbourhood sum
         this.cleanDeathFlags = (map) => {
             const sanitizedArray = this.applyToMap(map, (item, arrayIndex, i, j) => {
                 return {
@@ -133,7 +133,7 @@ export class CellGrid extends React.Component{
                             y: item.y,
                             isAlive: true,
                             diedSinceLastGeneration: false,
-                            neighbourSum: 0
+                            neighbourSum: item.neighbourSum
                         }
                     }
 
@@ -153,7 +153,7 @@ export class CellGrid extends React.Component{
                             y: item.y,
                             isAlive: true,
                             diedSinceLastGeneration: false,
-                            neighbourSum: 0
+                            neighbourSum: item.neighbourSum
                         }
                     }
 
@@ -177,7 +177,7 @@ export class CellGrid extends React.Component{
         const randomGameOfLife = this.randomMap()
         this.setState({cellMap: randomGameOfLife});
 
-        setInterval(() => this.handleCurrentCycle(), 500);
+        setInterval(() => this.handleCurrentCycle(), 10000);
     }
 
     handleCurrentCycle() {
@@ -199,6 +199,7 @@ export class CellGrid extends React.Component{
             nextGenerationCellMap.forEach(cell => {
                 if(cell.isAlive) cycleValue += 1
             })
+            nextGenerationCellMap = this.sumOfNeighboursMap(nextGenerationCellMap)
             this.setState({
                 cellMap: nextGenerationCellMap,
                 cycleValue: cycleValue,
@@ -213,13 +214,14 @@ export class CellGrid extends React.Component{
 
             return <Cell 
                 key={index} 
-                isAlive={cell.isAlive} 
+                cell={cell} 
                 size={cellSize} 
                 position={{
                     y: cell.y * cellSize,
                     x: cell.x * cellSize, 
                     z: 0
                 }} 
+                
             />
         })
         return <Canvas 

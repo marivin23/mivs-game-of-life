@@ -48,6 +48,9 @@
     ]
   },
   "devDependencies": {
+    "@babel/cli": "^7.17.6",
+    "@babel/core": "^7.17.8",
+    "@babel/preset-env": "^7.16.11",
     "babel-plugin-glsl": "^1.0.0",
     "glslify": "^7.1.1"
   }

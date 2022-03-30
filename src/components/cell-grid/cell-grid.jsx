@@ -10,7 +10,9 @@ import './cell-grid.scss';
 const randomBool = () => {
     return Math.random() < 0.5
 }
-
+const calculateCameraDistance = (height, fov) => {
+    return height / 2 / Math.tan(Math.PI * fov / 360);
+}
 export class CellGrid extends React.Component{
     constructor(props) {
         super(props);
@@ -224,18 +226,19 @@ export class CellGrid extends React.Component{
                 
             />
         })
-        return <Canvas 
+        return <Canvas
                     className= "fiberCanvas"
                     camera={{
-                        position: [cellSize * this.props.rows /2, 0, -5],
+                        fov: 75,
+                        position: [0, 0, calculateCameraDistance(this.props.cols * cellSize,75)],
                         near: 0.1,
                         far: 1000,
-                        zoom: 1,
+                        zoom: 1.5,
                     }}
                     shadows
                 >
                     <ambientLight intensity={1} />
-                    <group rotation={[Math.PI,0,0]} lookAt={[cellSize * this.props.rows/2, 0, -5]} position={[-cellSize * this.props.rows /2, 0,0]}>
+                    <group rotation={[0,0,0]} lookAt={[0, 0, calculateCameraDistance(this.props.cols * cellSize, 75)]} position={[-cellSize * (this.props.cols-25), -cellSize * (this.props.rows -18),1]}>
                         {cells}
                         <OrbitControls/>
                     </group>

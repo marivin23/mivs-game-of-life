@@ -14,6 +14,11 @@ const calculateCameraDistance = (height, fov) => {
     return height / 2 / Math.tan(Math.PI * fov / 360);
 }
 export class CellGrid extends React.Component{
+    width
+    height
+    cellSize
+    rows
+    cols
     constructor(props) {
         super(props);
         this.state = {
@@ -22,18 +27,18 @@ export class CellGrid extends React.Component{
             interruptCycle: false,
             alreadyComputing: false
         };
-
+        this.myRef = React.createRef()
         this.applyToMap = (map, func) => {
-            let newMap = new Array(this.props.cols * this.props.rows)
-            for(let i = 0; i < this.props.rows; i++){
-                for(let j = 0; j < this.props.cols; j++){
-                    newMap[i * this.props.cols + j] = func(map[i * props.cols + j], i * props.cols +j, i, j)
+            let newMap = new Array(this.cols * this.rows)
+            for(let i = 0; i < this.rows; i++){
+                for(let j = 0; j < this.cols; j++){
+                    newMap[i * this.cols + j] = func(map[i * this.cols + j], i * this.cols +j, i, j)
                 }
             }
             return newMap 
         }
 
-        this.emptyMap = () => this.applyToMap(new Array(this.props.rows * this.props.cols).fill({
+        this.emptyMap = () => this.applyToMap(new Array(this.rows * this.cols).fill({
             x: 0,
             y: 0,
             isAlive: false,
@@ -67,10 +72,10 @@ export class CellGrid extends React.Component{
         // This function returns an array with the neighbour count of the element on each element's index in
             const arrayOfSums = this.applyToMap(map, (item, arrayIndex, i, j) => {
                 let sum = 0
-                const leftException = arrayIndex % this.props.cols === 0
-                const rightException = arrayIndex % this.props.cols === this.props.cols - 1
-                const upException = (arrayIndex - this.props.cols) < 0
-                const downException = (arrayIndex + this.props.cols) > this.props.rows * this.props.cols - 1
+                const leftException = arrayIndex % this.cols === 0
+                const rightException = arrayIndex % this.cols === this.cols - 1
+                const upException = (arrayIndex - this.cols) < 0
+                const downException = (arrayIndex + this.cols) > this.rows * this.cols - 1
 
                 // NOTE: '+' boolean returns the number version '+' operator before a variable acts as a quick number converter
                 // NOTE: but this is slow af in chrome so a turnary is the fastest option but a close second option is bool | 0
@@ -80,18 +85,18 @@ export class CellGrid extends React.Component{
                 //adding right neighbour with except condition
                 sum += rightException ? 0 : (map[arrayIndex + 1].isAlive ? 1 : 0)
                 //adding up neighbour with except condition
-                sum +=  upException ? 0 : (map[arrayIndex - this.props.cols].isAlive ? 1 : 0)
+                sum +=  upException ? 0 : (map[arrayIndex - this.cols].isAlive ? 1 : 0)
                 //adding down neighbour with except condition
-                sum += downException ? 0 : (map[arrayIndex + this.props.cols].isAlive ? 1 : 0)
+                sum += downException ? 0 : (map[arrayIndex + this.cols].isAlive ? 1 : 0)
 
                 //adding left-up neighbour with except condition
-                sum += leftException || upException ? 0 : (map[arrayIndex - this.props.cols - 1].isAlive ? 1 : 0)
+                sum += leftException || upException ? 0 : (map[arrayIndex - this.cols - 1].isAlive ? 1 : 0)
                 //adding right-up neighbour with except condition
-                sum += rightException || upException ? 0 : (map[arrayIndex - this.props.cols + 1].isAlive ? 1 : 0)
+                sum += rightException || upException ? 0 : (map[arrayIndex - this.cols + 1].isAlive ? 1 : 0)
                 //adding left-down neighbour with except condition
-                sum += leftException || downException ? 0 : (map[arrayIndex + this.props.cols - 1].isAlive ? 1 : 0)
+                sum += leftException || downException ? 0 : (map[arrayIndex + this.cols - 1].isAlive ? 1 : 0)
                 //adding left-up exception
-                sum += rightException || downException ? 0 : (map[arrayIndex + this.props.cols + 1].isAlive ? 1 : 0)
+                sum += rightException || downException ? 0 : (map[arrayIndex + this.cols + 1].isAlive ? 1 : 0)
 
                 return {
                     x: item.x,
@@ -176,6 +181,14 @@ export class CellGrid extends React.Component{
 
     }
     componentDidMount() {
+        console.log('DIDMOUNT')
+        this.width = this.myRef.current.clientWidth;
+        this.height = this.myRef.current.clientHeight;
+        this.cellSize = this.width / this.props.resolution;
+        this.cols =  Math.floor(this.width / this.cellSize);
+        this.rows = Math.floor(this.height / this.cellSize);
+        console.log(this.rows)
+        console.log(this.cols)
         const randomGameOfLife = this.randomMap()
         this.setState({cellMap: randomGameOfLife});
 
@@ -211,16 +224,15 @@ export class CellGrid extends React.Component{
     }
 
     renderCellGrid() {
-        const cellSize = 0.1
         const cells = this.state.cellMap.map((cell, index)=>{
 
             return <Cell 
                 key={index} 
                 cell={cell} 
-                size={cellSize} 
+                size={this.cellSize} 
                 position={{
-                    y: cell.y * cellSize,
-                    x: cell.x * cellSize, 
+                    y: cell.y * this.cellSize,
+                    x: cell.x * this.cellSize, 
                     z: 0
                 }} 
                 
@@ -230,7 +242,7 @@ export class CellGrid extends React.Component{
                     className= "fiberCanvas"
                     camera={{
                         fov: 75,
-                        position: [0, 0, calculateCameraDistance(this.props.cols * cellSize,75)],
+                        position: [0, 0, calculateCameraDistance(this.cols * this.cellSize,75)],
                         near: 0.1,
                         far: 1000,
                         zoom: 1.5,
@@ -238,7 +250,7 @@ export class CellGrid extends React.Component{
                     shadows
                 >
                     <ambientLight intensity={1} />
-                    <group rotation={[0,0,0]} lookAt={[0, 0, calculateCameraDistance(this.props.cols * cellSize, 75)]} position={[-cellSize * (this.props.cols-25), -cellSize * (this.props.rows -18),1]}>
+                    <group rotation={[0,0,0]} lookAt={[0, 0, calculateCameraDistance(this.cols * this.cellSize, 75)]} position={[-this.cellSize * (this.cols-25), -this.cellSize * (this.rows -18),1]}>
                         {cells}
                         <OrbitControls/>
                     </group>
@@ -254,7 +266,7 @@ export class CellGrid extends React.Component{
 
     render() {
         return (
-            <div className='cell-grid'>
+            <div ref={this.myRef} className='cell-grid'>
                 {!this.state.interruptCycle && this.renderCellGrid()}
                 <div className='restart' onClick={async () => await this.restartGrid()}>
                     RESTART

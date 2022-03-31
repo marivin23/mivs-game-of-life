@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as THREE from 'three'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera } from '@react-three/drei'
-
+import { EffectComposer, DepthOfField, Bloom, Noise, Vignette } from '@react-three/postprocessing'
 import Cell from '../cell/cell'
 import './cell-grid.scss';
 
@@ -252,6 +252,9 @@ export class CellGrid extends React.Component{
                             {cells}
                         </group>
                     </OrthographicCamera>
+                    <EffectComposer>
+                        <Bloom luminanceThreshold={0.2} luminanceSmoothing={1} height={50} />
+                    </EffectComposer>
                 </Canvas>
     }
 

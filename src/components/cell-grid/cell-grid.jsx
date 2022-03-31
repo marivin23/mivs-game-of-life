@@ -2,13 +2,13 @@ import * as React from 'react';
 
 import * as THREE from 'three'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+import { OrbitControls, OrthographicCamera } from '@react-three/drei'
 
 import Cell from '../cell/cell'
 import './cell-grid.scss';
 
 const randomBool = () => {
-    return Math.random() < 0.5
+    return Math.random() < 0.3
 }
 const calculateCameraDistance = (height, fov) => {
     return height / 2 / Math.tan(Math.PI * fov / 360);
@@ -192,7 +192,7 @@ export class CellGrid extends React.Component{
         const randomGameOfLife = this.randomMap()
         this.setState({cellMap: randomGameOfLife});
 
-        setInterval(() => this.handleCurrentCycle(), 500);
+        setInterval(() => this.handleCurrentCycle(), 1000);
     }
 
     handleCurrentCycle() {
@@ -222,38 +222,36 @@ export class CellGrid extends React.Component{
             });
         });
     }
-
+    calculateCameraZoom(){
+            return this.width / ( this.rows * this.cellSize )
+    }
     renderCellGrid() {
         const cells = this.state.cellMap.map((cell, index)=>{
-
             return <Cell 
                 key={index} 
                 cell={cell} 
-                size={this.cellSize} 
+                size={this.cellSize}
+                screenW={this.width}
+                screenH={this.height}
                 position={{
-                    y: cell.y * this.cellSize,
-                    x: cell.x * this.cellSize, 
+                    y: this.cellSize / 2 + cell.y * this.cellSize,
+                    x: this.cellSize / 2 + cell.x * this.cellSize, 
                     z: 0
                 }} 
                 
             />
         })
+        const DISTANCE_FROM_CAMERA = 300
         return <Canvas
                     className= "fiberCanvas"
-                    camera={{
-                        fov: 75,
-                        position: [0, 0, calculateCameraDistance(this.cols * this.cellSize,75)],
-                        near: 0.1,
-                        far: 1000,
-                        zoom: 1.5,
-                    }}
                     shadows
                 >
                     <ambientLight intensity={1} />
-                    <group rotation={[0,0,0]} lookAt={[0, 0, calculateCameraDistance(this.cols * this.cellSize, 75)]} position={[-this.cellSize * (this.cols-25), -this.cellSize * (this.rows -18),1]}>
-                        {cells}
-                        <OrbitControls/>
-                    </group>
+                    <OrthographicCamera makeDefault left={0} right={this.cellSize * this.cols} top={this.cellSize * this.rows} bottom={0}>
+                        <group rotation={[0,0,0]} lookAt={[0, 0, 0]} position={[0, 0, -DISTANCE_FROM_CAMERA]}>
+                            {cells}
+                        </group>
+                    </OrthographicCamera>
                 </Canvas>
     }
 

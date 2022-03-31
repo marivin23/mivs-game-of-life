@@ -15,8 +15,11 @@ const Cell = (props) => {
 // from what i understand threejs doesent play well with changing uniforms so we need em memoized
     useFrame((state) => {
         if(props.cell.isAlive){
-            ref.current.material.uniforms.u_time.value = state.clock.elapsedTime 
-            ref.current.material.uniforms.u_resolution = new THREE.Vector2(props.size, props.size)
+            ref.current.material.uniforms.u_time.value = state.clock.elapsedTime; 
+            ref.current.material.uniforms.u_resolution.value = new THREE.Vector2(props.screenW, props.screenH)
+            ref.current.material.uniforms.u_mouse.value = state.mouse
+            ref.current.material.uniforms.u_is_hovered.value = hovered
+            ref.current.material.uniforms.u_is_selected.value = clicked
         }
     })
 

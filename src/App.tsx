@@ -21,9 +21,6 @@ class App extends React.Component {
 
                 <CellGrid resolution={50}/>
 
-                <div className='contact-me-container'>
-                    <a href='mailto: irimiemariusvictor@gmail.com' target='#'>Contact me!</a>
-                </div>
             </AppStateContext.Provider>
         );
     }

@@ -6,12 +6,12 @@ $colors: (red, green, blue, yellow, cyan, pink, black);
 .fiberCanvas {
     display: flex;
     min-width: 100VW;
-    min-height: calc(100vh - #{200px});
+    min-height: calc(100vh);
 
 }
 .cell-grid {
   min-width: 100vw;
-  min-height: calc(100vh - #{200px});
+  min-height: calc(100vh);
   .cell-col {
     display: flex;
 

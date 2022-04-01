@@ -20,7 +20,9 @@ const Cell = (props) => {
             ref.current.material.uniforms.u_mouse.value = state.mouse
             ref.current.material.uniforms.u_is_hovered.value = hovered
             ref.current.material.uniforms.u_is_selected.value = clicked
-        }
+            ref.current.material.uniforms.u_speed.value = new THREE.Vector2(0.2,0.2)
+            ref.current.material.uniforms.u_shift.value = 3.0
+        }   
     })
 
 // <meshLambertMaterial color={(props.cell.isAlive ? color : 'black')}/>

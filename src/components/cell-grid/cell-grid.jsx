@@ -192,7 +192,7 @@ export class CellGrid extends React.Component{
         const randomGameOfLife = this.randomMap()
         this.setState({cellMap: randomGameOfLife});
 
-        setInterval(() => this.handleCurrentCycle(), 1000);
+        setInterval(() => this.handleCurrentCycle(), 5000);
     }
 
     handleCurrentCycle() {
@@ -229,7 +229,7 @@ export class CellGrid extends React.Component{
         const cells = this.state.cellMap.map((cell, index)=>{
             return <Cell 
                 key={index} 
-                cell={cell} 
+                cell={cell}
                 size={this.cellSize}
                 screenW={this.width}
                 screenH={this.height}
@@ -268,7 +268,7 @@ export class CellGrid extends React.Component{
     render() {
         return (
             <div ref={this.myRef} className='cell-grid'>
-                {!this.state.interruptCycle && this.renderCellGrid()}
+                {!this.interruptCycle && this.renderCellGrid()}
                 <div className='restart' onClick={async () => await this.restartGrid()}>
                     RESTART
                 </div>

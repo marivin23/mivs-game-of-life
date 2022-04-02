@@ -15,12 +15,7 @@ class App extends React.Component {
     render() {
         return (
             <AppStateContext.Provider value={this.appContextHandler.getContextState()}>
-                <div className='wip-site'>
-                    Currently the site's status is: WIP
-                </div>
-
-                <CellGrid resolution={50}/>
-
+                <CellGrid resolution={10}/>
             </AppStateContext.Provider>
         );
     }

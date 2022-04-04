@@ -182,6 +182,7 @@ export class CellGrid extends React.Component{
     }
     componentDidMount() {
         console.log('DIDMOUNT')
+        
         this.width = this.myRef.current.clientWidth;
         this.height = this.myRef.current.clientHeight;
         this.cellSize = this.width / this.props.resolution;
@@ -191,8 +192,8 @@ export class CellGrid extends React.Component{
         console.log(this.cols)
         const randomGameOfLife = this.randomMap()
         this.setState({cellMap: randomGameOfLife});
-
-        setInterval(() => this.handleCurrentCycle(), 5000);
+        
+        setInterval(() => this.handleCurrentCycle(), this.props.cycleDuration);
     }
 
     handleCurrentCycle() {
@@ -233,6 +234,7 @@ export class CellGrid extends React.Component{
                 size={this.cellSize}
                 screenW={this.width}
                 screenH={this.height}
+                lifetime={this.props.cycleDuration}
                 position={{
                     y: this.cellSize / 2 + cell.y * this.cellSize,
                     x: this.cellSize / 2 + cell.x * this.cellSize, 
@@ -266,14 +268,9 @@ export class CellGrid extends React.Component{
     }
 
     render() {
-        return (
-            <div ref={this.myRef} className='cell-grid'>
+        return <div ref={this.myRef} className='cell-grid'>
                 {!this.interruptCycle && this.renderCellGrid()}
-                <div className='restart' onClick={async () => await this.restartGrid()}>
-                    RESTART
-                </div>
             </div>
-        )
     }
 }
 
